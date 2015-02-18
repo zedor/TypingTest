@@ -23,6 +23,7 @@
 		var winH:int = 175;
 		var winW:int = 400;
 		
+		var leaderboard:String = "Words per minute";
 		var holderGame:MovieClip = new MovieClip;
 		var holderMain:MovieClip = new MovieClip;
 		var maskTxt:Shape = new Shape;
@@ -32,6 +33,7 @@
 		var vString:Vector.<String> = new Vector.<String>;
 		var wordList:Vector.<String> = new Vector.<String>;
 		var inputField:TextField = new TextField;
+		var btnSubmit:MovieClip;
 		var inFieldFormat:TextFormat;
 		/*var countField:TextField = new TextField;
 		var ctFieldFormat:TextFormat;*/
@@ -118,6 +120,16 @@
 			scoreField.text = "WPM: " + score.toString();
 			scoreField.setTextFormat(scFieldFormat);
 			gameRunning = false;
+			btnSubmit.label = "Submit";
+			btnSubmit.enabled = true;
+			btnSubmit.addEventListener(MouseEvent.CLICK, submitScore);
+		}
+		
+		private function submitScore( e:MouseEvent ) {
+			btnSubmit.label = "Submitted!";
+			minigameAPI.updateLeaderboard(leaderboard, score);
+			btnSubmit.enabled = false;
+			btnSubmit.removeEventListener(MouseEvent.CLICK, submitScore);
 		}
 		
 		/*private function changeCountdown( e:TimerEvent ) {
@@ -180,10 +192,10 @@
 			var resButtonClass:Class = getDefinitionByName("ButtonSkinned") as Class;
 			var btnStart:MovieClip = new buttonClass();
 			var btnRetry:MovieClip = new scrButtonClass();
-			var btnSubmit:MovieClip = new scrButtonClass();
 			var btnQuit:MovieClip = new scrButtonClass();
 			var btnRes:MovieClip = new resButtonClass();
-			
+			btnSubmit = new scrButtonClass();
+			 
 			btnRes.label = "Reset";
 			btnRes.x = 280;
 			btnRes.y = 5;
@@ -240,7 +252,7 @@
 			btnStart.addEventListener(MouseEvent.CLICK, startGame);
 			btnRetry.addEventListener(MouseEvent.CLICK, startGame);
 			btnRes.addEventListener(MouseEvent.CLICK, startGame);
-			btnQuit.addEventListener(MouseEvent.CLICK, close);
+			btnQuit.addEventListener(MouseEvent.CLICK, quit);
 			stage.addEventListener(KeyboardEvent.KEY_DOWN, keyHit);
 			
 			loadWords();
@@ -399,6 +411,11 @@
 					if( rollingWord.length>5 ) rollingWord.shift();
 				}
 			}
+		}
+		
+		private function quit() {
+			if( gameTimer != null ) gameTimer.stop();
+			minigameAPI.closeMinigame();
 		}
 		
 		public override function close() : Boolean{
