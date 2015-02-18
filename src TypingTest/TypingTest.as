@@ -57,7 +57,7 @@
 		var gameRunning:Boolean = false;
 		var consumingInput:Boolean = false;
 		var awaitKey:Boolean = false;
-		var score;
+		var score:int;
 		
 		public function TypingTest() {
 			this.title = "Typing Test";
