@@ -37,12 +37,15 @@
 		var inFieldFormat:TextFormat;
 		/*var countField:TextField = new TextField;
 		var ctFieldFormat:TextFormat;*/
+		var topScoreField:TextField = new TextField;
+		var topScoreFieldFormat:TextFormat;
 		var gtField:TextField = new TextField;
 		var gtFieldFormat:TextFormat;
 		var scoreField:TextField = new TextField;
 		var scFieldFormat:TextFormat;
 		var startRow:Number;
 		var buffY:int;
+		var gameData:Object;
 		
 		var selColor:uint = 0x303030; // no idea
 		var failColor:uint = 0x990000; // red
@@ -118,6 +121,17 @@
 			holderGame.visible = false;
 			holderScore.visible = true;
 			scoreField.text = "WPM: " + score.toString();
+			if( gameData.score == null ) {
+				gameData.score = score.toString();
+				scoreField.appendText('!');
+				newTopScore(gameData.score.toString());
+				minigameAPI.saveData();
+			} else if ( int(gameData.score) < score ) {
+				gameData.score = score.toString();
+				scoreField.appendText('!');
+				minigameAPI.saveData();
+				newTopScore(gameData.score.toString());
+			}
 			scoreField.setTextFormat(scFieldFormat);
 			gameRunning = false;
 			btnSubmit.label = "Submit";
@@ -257,11 +271,43 @@
 			
 			loadWords();
 			
+			gameData = minigameAPI.getData();
+			
+			setTopScoreField();
+			if( gameData.score != null ) newTopScore(gameData.score.toString());
+				else newTopScore("-");
+			
 			minigameAPI.resizeGameWindow(winW, winH);
 		}
 		
 		private function loadWords() {
 			wordList.push("time", "person", "year", "way", "day", "thing", "man", "world", "life", "hand", "part", "child", "eye", "woman", "place", "work", "week", "case", "point", "government", "company", "number", "group", "problem", "fact", "be", "have", "do", "say", "get", "make", "go", "know", "take", "see", "come", "think", "look", "want", "give", "use", "find", "tell", "ask", "seem", "feel", "try", "leave", "call", "good", "new", "first", "last", "long", "great", "little", "own", "other", "old", "right", "big", "high", "different", "small", "large", "next", "early", "young", "important", "few", "public", "bad", "same", "able", "to", "of", "in", "for", "on", "with", "at", "by", "from", "up", "about", "into", "over", "after", "beneath", "under", "above", "others", "the", "and", "that", "not", "he", "as", "you", "this", "but", "his", "they", "her", "she", "or", "an", "will", "my", "one", "all", "would", "there", "their", "axe", "disruptor", "research", "quelling", "blade", "sword", "scheme", "roll", "frequent", "love", "mind", "abaddon", "alchemist", "bane", "batrider", "bloodseeker", "beastmaster", "bounty", "hunter", "ancient", "creep", "jungle", "gold", "cyka", "bristleback", "broodmother", "centaur", "chaos", "knight", "chen", "clinkz", "clockwerk", "crystal", "maiden", "dazzle", "death", "prophet", "doom", "dragon", "drow", "ranger", "earth", "spirit", "storm", "earthshaker", "elder", "titan", "ember", "enchantress", "enigma", "faceless", "void", "gyrocopter", "huskar", "invoker", "io", "jakiro", "juggernaut", "keeper", "light", "kunkka", "agility", "intelligence", "strength", "legion", "commander", "leshrac", "lich", "lina", "lion", "lone", "druid", "lifestealer", "luna", "mirana", "lycan", "magnus", "medusa", "meepo", "morphling", "naga", "siren", "nature's", "necrophos", "night", "stalker", "nyx", "assassin", "ogre", "magi", "omniknight", "oracle", "outworld", "devourer", "phantom", "phoenix", "puck", "pudge", "pugna", "queen", "pain", "razor", "riki", "rubick", "sand", "king", "shadow", "demon", "fiend", "silencer", "shaman", "skywrath", "mage", "slardar", "slark", "sniper", "spectre", "breaker", "sven", "techies", "templar", "terrorblade", "tidehunter", "timbersaw", "tinker", "treant", "protector", "tusk", "undying", "ursa", "venomancer", "viper", "visage", "warlock", "windranger", "winter", "wyvern", "witch", "doctor", "wraith", "zeus", "evil", "geniuses", "secret", "vici", "gaming", "alliance", "natus", "vincere");
+		}
+		
+		private function newTopScore(s:String) {
+			topScoreField.text = "Top WPM: "+s;
+			topScoreField.setTextFormat(topScoreFieldFormat);
+		}
+		
+		private function setTopScoreField() {
+			var txFormat:TextFormat = new TextFormat();
+
+			txFormat.color = "0xFFFFFF"
+			txFormat.size = 30;
+			//txFormat.font = "$TitleFont"
+			txFormat.align = "center";
+			topScoreFieldFormat = txFormat;
+			topScoreField.autoSize = "center";
+			topScoreField.multiline = false;
+			topScoreField.wordWrap = false;
+			topScoreField.text = "Top WPM: -";
+			topScoreField.background = false;
+			topScoreField.selectable = false;
+			topScoreField.x = 190;
+			topScoreField.y = 25;
+			topScoreField.setTextFormat(topScoreFieldFormat);
+			
+			holderMain.addChild(topScoreField);
 		}
 		
 		private function setScoreField() {
