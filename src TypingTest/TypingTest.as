@@ -4,8 +4,9 @@
 	import flash.events.KeyboardEvent;
 	import flash.ui.Keyboard;
 	
-	//import for valve assets
+	//import for volvo
 	import flash.utils.getDefinitionByName;
+	import ValveLib.Globals;
 
 	// mask rectangle
 	import flash.display.Sprite;
@@ -15,8 +16,10 @@
 	import flash.text.Font;
 	import flash.text.TextFormat;
 	import flash.display.Shape;
+	
 	import flash.utils.Timer;
 	import flash.events.TimerEvent;
+	import flash.display.Bitmap;
 	
 	public class TypingTest extends Minigame{
 		
@@ -24,6 +27,8 @@
 		var winW:int = 400;
 		
 		var leaderboard:String = "Words per minute";
+		var holderBoard:MovieClip = new MovieClip;
+		var holderScores:MovieClip = new MovieClip;
 		var holderGame:MovieClip = new MovieClip;
 		var holderMain:MovieClip = new MovieClip;
 		var maskTxt:Shape = new Shape;
@@ -46,6 +51,8 @@
 		var startRow:Number;
 		var buffY:int;
 		var gameData:Object;
+		var holdData:Object = null;
+		var buffTimer:Timer;
 		
 		var selColor:uint = 0x303030; // no idea
 		var failColor:uint = 0x990000; // red
@@ -118,6 +125,7 @@
 		}
 		
 		private function endGame( e:TimerEvent ) {
+			score = score / 5;
 			holderGame.visible = false;
 			holderScore.visible = true;
 			scoreField.text = "WPM: " + score.toString();
@@ -172,7 +180,7 @@
 			if( e.charCode == 32 ) { // SPACE key
 				vText[currentWord].background = false;
 				if( vString[currentWord]!=buffWord ) vText[currentWord].textColor = failColor;
-					else { vText[currentWord].textColor = goodColor; score++; }
+					else { vText[currentWord].textColor = goodColor; score+=vText[currentWord].text.length+1; }
 				currentWord++;
 				buffWord = "";
 				vText[currentWord].background = true;
@@ -182,7 +190,7 @@
 				buffWord = buffWord.substr(0, buffWord.length-1);
 				if( vString[currentWord].substr(0, buffWord.length)!=buffWord ) vText[currentWord].textColor = failColor;
 					else vText[currentWord].textColor = normColor;
-			} else if( (e.charCode>96 && e.charCode<123) || e.charCode == 39 ){ // ALPHABET keys
+			} else if( (e.charCode>64 && e.charCode<91) || (e.charCode>96 && e.charCode<123) || e.charCode == 39 || e.charCode == 44 || e.charCode == 46 || e.charCode == 45  ){ // ALPHABET keys
 				buffWord = buffWord + String.fromCharCode(e.charCode);
 				if( vString[currentWord].substr(0, buffWord.length)!=buffWord ) vText[currentWord].textColor = failColor;
 					else vText[currentWord].textColor = normColor;
@@ -199,33 +207,197 @@
 			}
 			startRow = vText[currentWord].y;
 		}
+		
+		private function showBoard(e:MouseEvent) {
+			holderMain.visible = false;
+			holderGame.visible = false;
+			holderScore.visible = false;
+			holderBoard.visible = true;
+			
+			reloadBoard();
+		}
+		
+		private function reloadBoard() {
+			minigameAPI.getLeaderboardTop(leaderboard, function(obj){
+				minigameAPI.log("CALLBACK SUCCESS");
+				if (obj.error){
+					minigameAPI.log("ERROR: " + obj.error);
+					return;
+				}
+				drawBoard(obj, holderScores, true);
+			});
+			this.title = "Top Scores";
+			minigameAPI.updateTitle();
+			minigameAPI.resizeGameWindow(400, 470);
+		}
+		
+		private function clearBoard () {
+			for (var i:int = holderScores.numChildren-1; i>=0; i--){
+				holderScores.removeChildAt(i);
+			}
+		}
+		
+		private function drawBoard( boardData:Object, holder:MovieClip, refresh:Boolean) {
+			clearBoard();
+			var counter:int = 0;
+			var buffMc:MovieClip;
+			while( boardData[counter]!=null ) {
+				//minigameAPI.log("[counter] " + counter);
+				buffMc = new MovieClip;
+				boardAddIndex(counter+1, buffMc);
+				boardAddImage(counter+1, boardData[counter].user_id32, buffMc);
+				boardAddName(counter+1, boardData[counter].user_name , buffMc);
+				boardAddScore(counter+1, boardData[counter].highscore_value.toString(), buffMc);
+				holder.addChild(buffMc);
+				counter++;
+			}
+			
+			if (refresh){
+				var fun:Function = (function(){return function(e:TimerEvent){
+					drawBoard(boardData, holder, false);
+					buffTimer = null;
+				};})();
+				
+				if( buffTimer != null ) buffTimer.stop();
+				buffTimer = new Timer(50, 1);
+				buffTimer.addEventListener(TimerEvent.TIMER, fun)
+				buffTimer.start();
+			}
+		}
+		
+		private function boardAddIndex( index:int, buffHolder:MovieClip ) {
+			var txFormat:TextFormat = new TextFormat();
+			var txField:TextField = new TextField;
+
+			txFormat.color = "0xFFFFFF"
+			txFormat.size = 18;
+			//txFormat.font = "$TitleFont"
+			txFormat.align = "right";
+			txField.autoSize = "none";
+			txField.width = 25;
+			txField.height = 25;
+			txField.multiline = false;
+			txField.wordWrap = false;
+			txField.text = index.toString()+".";
+			txField.background = false;
+			txField.selectable = false;
+			
+			txField.x = 95;
+			if( index == 1 ) txField.y = 5;
+				else txField.y = index*20;
+			
+			txField.setTextFormat(txFormat);
+			buffHolder.addChild(txField);
+		}
+		
+		private function boardAddImage( index:int, uid:String, buffHolder:MovieClip ) {
+			var buffMc:MovieClip = new MovieClip;
+			Globals.instance.LoadImage("img://[S" + uid + "]", buffMc, false);
+			buffMc.scaleX = 0.6;
+			buffMc.scaleY = 0.6;
+			buffMc.x = 125;
+			buffHolder.addChild(buffMc);
+			if( index == 1 ) buffMc.y = 7;
+				else buffMc.y = index*20 + 2;
+		}
+		
+		private function boardAddName( index:int, uname:String, buffHolder:MovieClip ) {
+			var txFormat:TextFormat = new TextFormat();
+			var txField:TextField = new TextField;
+
+			txFormat.color = "0xFFFFFF"
+			txFormat.size = 18;
+			//txFormat.font = "$TitleFont"
+			txFormat.align = "left";
+			txField.autoSize = "none";
+			txField.width = 130;
+			txField.height = 25;
+			txField.multiline = false;
+			txField.wordWrap = false;
+			txField.text = uname;
+			txField.background = false;
+			txField.selectable = false;
+			
+			txField.x = 150;
+			if( index == 1 ) txField.y = 5;
+				else txField.y = index*20;
+			
+			txField.setTextFormat(txFormat);
+			buffHolder.addChild(txField);
+		}
+		
+		private function boardAddScore( index:int, uscore:String, buffHolder:MovieClip ) {
+			var txFormat:TextFormat = new TextFormat();
+			var txField:TextField = new TextField;
+
+			txFormat.color = "0xFFFFFF"
+			txFormat.size = 18;
+			//txFormat.font = "$TitleFont"
+			txFormat.align = "left";
+			txField.autoSize = "none";
+			txField.width = 30;
+			txField.height = 25;
+			txField.multiline = false;
+			txField.wordWrap = false;
+			txField.text = uscore;
+			txField.background = false;
+			txField.selectable = false;
+			
+			txField.x = 300;
+			if( index == 1 ) txField.y = 5;
+				else txField.y = index*20;
+			
+			txField.setTextFormat(txFormat);
+			buffHolder.addChild(txField);
+		}
+		
+		private function toMain(e:MouseEvent) {
+			holderMain.visible = true;
+			holderGame.visible = false;
+			holderScore.visible = false;
+			holderBoard.visible = false;
+			
+			this.title = "Typing Test";
+			minigameAPI.updateTitle();
+			minigameAPI.resizeGameWindow(winW, winH);
+		}
 
 		public override function initialize() : void {
 			var buttonClass:Class = getDefinitionByName("ButtonThinSecondary") as Class;
 			var scrButtonClass:Class = getDefinitionByName("chrome_button_normal") as Class;
 			var resButtonClass:Class = getDefinitionByName("ButtonSkinned") as Class;
-			var btnStart:MovieClip = new buttonClass();
+			var btnStart:MovieClip = new scrButtonClass();
 			var btnRetry:MovieClip = new scrButtonClass();
+			var btnReturn:MovieClip = new scrButtonClass();
+			var btnBoardReturn:MovieClip = new scrButtonClass();
 			var btnQuit:MovieClip = new scrButtonClass();
 			var btnRes:MovieClip = new resButtonClass();
+			var btnBoard:MovieClip = new scrButtonClass();
 			btnSubmit = new scrButtonClass();
-			 
+			
 			btnRes.label = "Reset";
 			btnRes.x = 280;
 			btnRes.y = 5;
+			
 			btnStart.label = "Start";
-			btnStart.x = 150;
-			btnStart.y = 100;
+			btnBoard.label = "Top Scores";
+			btnQuit.label = "Quit";
 			
 			btnSubmit.label = "Submit";
 			btnRetry.label = "Retry";
-			btnQuit.label = "Quit";
-			btnSubmit.x = 180;
-			btnSubmit.y = 100;
-			btnRetry.x = 180;
-			btnRetry.y = 125;
-			btnQuit.x = 180;
-			btnQuit.y = 150;
+			btnReturn.label = "Main Menu";
+			
+			btnBoardReturn.label = "Main Menu";
+			
+			btnSubmit.x = 190;	btnStart.x = 190;
+			btnSubmit.y = 100;	btnStart.y = 100;
+			btnRetry.x = 190;	btnBoard.x = 190;
+			btnRetry.y = 125;	btnBoard.y = 125;
+			btnReturn.x = 190;	btnQuit.x = 190;
+			btnReturn.y = 150;	btnQuit.y = 150;
+			
+			btnBoardReturn.x = 180;
+			btnBoardReturn.y = 440;
 
 			maskTxt.graphics.lineStyle();
 			maskTxt.graphics.beginFill(0x000000,1);
@@ -237,6 +409,8 @@
 			
 			this.addChild(holderMain);
 			holderMain.addChild(btnStart);
+			holderMain.addChild(btnQuit);
+			holderMain.addChild(btnBoard);
 			this.addChild(holderGame);
 			holderGame.addChild(holderText);
 			holderGame.addChild(maskTxt);
@@ -245,7 +419,10 @@
 			this.addChild(holderScore);
 			holderScore.addChild(btnSubmit);
 			holderScore.addChild(btnRetry);
-			holderScore.addChild(btnQuit);
+			holderScore.addChild(btnReturn);
+			this.addChild(holderBoard);
+			holderBoard.addChild(btnBoardReturn);
+			holderBoard.addChild(holderScores);
 			
 			setInputField();
 			//setCountField();
@@ -262,10 +439,14 @@
 			
 			holderGame.visible = false;
 			holderScore.visible = false;
+			holderBoard.visible = false;
 			
 			btnStart.addEventListener(MouseEvent.CLICK, startGame);
 			btnRetry.addEventListener(MouseEvent.CLICK, startGame);
 			btnRes.addEventListener(MouseEvent.CLICK, startGame);
+			btnReturn.addEventListener(MouseEvent.CLICK, toMain);
+			btnBoardReturn.addEventListener(MouseEvent.CLICK, toMain);
+			btnBoard.addEventListener(MouseEvent.CLICK, showBoard);
 			btnQuit.addEventListener(MouseEvent.CLICK, quit);
 			stage.addEventListener(KeyboardEvent.KEY_DOWN, keyHit);
 			
@@ -278,10 +459,11 @@
 				else newTopScore("-");
 			
 			minigameAPI.resizeGameWindow(winW, winH);
+			minigameAPI.repositionGameWindow();
 		}
 		
 		private function loadWords() {
-			wordList.push("time", "person", "year", "way", "day", "thing", "man", "world", "life", "hand", "part", "child", "eye", "woman", "place", "work", "week", "case", "point", "government", "company", "number", "group", "problem", "fact", "be", "have", "do", "say", "get", "make", "go", "know", "take", "see", "come", "think", "look", "want", "give", "use", "find", "tell", "ask", "seem", "feel", "try", "leave", "call", "good", "new", "first", "last", "long", "great", "little", "own", "other", "old", "right", "big", "high", "different", "small", "large", "next", "early", "young", "important", "few", "public", "bad", "same", "able", "to", "of", "in", "for", "on", "with", "at", "by", "from", "up", "about", "into", "over", "after", "beneath", "under", "above", "others", "the", "and", "that", "not", "he", "as", "you", "this", "but", "his", "they", "her", "she", "or", "an", "will", "my", "one", "all", "would", "there", "their", "axe", "disruptor", "research", "quelling", "blade", "sword", "scheme", "roll", "frequent", "love", "mind", "abaddon", "alchemist", "bane", "batrider", "bloodseeker", "beastmaster", "bounty", "hunter", "ancient", "creep", "jungle", "gold", "cyka", "bristleback", "broodmother", "centaur", "chaos", "knight", "chen", "clinkz", "clockwerk", "crystal", "maiden", "dazzle", "death", "prophet", "doom", "dragon", "drow", "ranger", "earth", "spirit", "storm", "earthshaker", "elder", "titan", "ember", "enchantress", "enigma", "faceless", "void", "gyrocopter", "huskar", "invoker", "io", "jakiro", "juggernaut", "keeper", "light", "kunkka", "agility", "intelligence", "strength", "legion", "commander", "leshrac", "lich", "lina", "lion", "lone", "druid", "lifestealer", "luna", "mirana", "lycan", "magnus", "medusa", "meepo", "morphling", "naga", "siren", "nature's", "necrophos", "night", "stalker", "nyx", "assassin", "ogre", "magi", "omniknight", "oracle", "outworld", "devourer", "phantom", "phoenix", "puck", "pudge", "pugna", "queen", "pain", "razor", "riki", "rubick", "sand", "king", "shadow", "demon", "fiend", "silencer", "shaman", "skywrath", "mage", "slardar", "slark", "sniper", "spectre", "breaker", "sven", "techies", "templar", "terrorblade", "tidehunter", "timbersaw", "tinker", "treant", "protector", "tusk", "undying", "ursa", "venomancer", "viper", "visage", "warlock", "windranger", "winter", "wyvern", "witch", "doctor", "wraith", "zeus", "evil", "geniuses", "secret", "vici", "gaming", "alliance", "natus", "vincere");
+			wordList.push("anti-mage", "kappa", "volvo", "time", "person", "year", "way", "day", "thing", "man", "world", "life", "hand", "part", "child", "eye", "woman", "place", "work", "week", "case", "point", "government", "company", "number", "group", "problem", "fact", "be", "have", "do", "say", "get", "make", "go", "know", "take", "see", "come", "think", "look", "want", "give", "use", "find", "tell", "ask", "seem", "feel", "try", "leave", "call", "good", "new", "first", "last", "long", "great", "little", "own", "other", "old", "right", "big", "high", "different", "small", "large", "next", "early", "young", "important", "few", "public", "bad", "same", "able", "to", "of", "in", "for", "on", "with", "at", "by", "from", "up", "about", "into", "over", "after", "beneath", "under", "above", "others", "the", "and", "that", "not", "he", "as", "you", "this", "but", "his", "they", "her", "she", "or", "an", "will", "my", "one", "all", "would", "there", "their", "axe", "disruptor", "research", "quelling", "blade", "sword", "scheme", "roll", "frequent", "love", "mind", "abaddon", "alchemist", "bane", "batrider", "bloodseeker", "beastmaster", "bounty", "hunter", "ancient", "creep", "jungle", "gold", "cyka", "bristleback", "broodmother", "centaur", "chaos", "knight", "chen", "clinkz", "clockwerk", "crystal", "maiden", "dazzle", "death", "prophet", "doom", "dragon", "drow", "ranger", "earth", "spirit", "storm", "earthshaker", "elder", "titan", "ember", "enchantress", "enigma", "faceless", "void", "gyrocopter", "huskar", "invoker", "io", "jakiro", "juggernaut", "keeper", "light", "kunkka", "agility", "intelligence", "strength", "legion", "commander", "leshrac", "lich", "lina", "lion", "lone", "druid", "lifestealer", "luna", "mirana", "lycan", "magnus", "medusa", "meepo", "morphling", "naga", "siren", "nature's", "necrophos", "night", "stalker", "nyx", "assassin", "ogre", "magi", "omniknight", "oracle", "outworld", "devourer", "phantom", "phoenix", "puck", "pudge", "pugna", "queen", "pain", "razor", "riki", "rubick", "sand", "king", "shadow", "demon", "fiend", "silencer", "shaman", "skywrath", "mage", "slardar", "slark", "sniper", "spectre", "breaker", "sven", "techies", "templar", "terrorblade", "tidehunter", "timbersaw", "tinker", "treant", "protector", "tusk", "undying", "ursa", "venomancer", "viper", "visage", "warlock", "windranger", "winter", "wyvern", "witch", "doctor", "wraith", "zeus", "evil", "geniuses", "secret", "vici", "gaming", "alliance", "natus", "vincere", "Selena", "Gomez", "Noya", "jimmydorry", "ashfortyseven", "BMD", "Perry", "Myll", "penguinwizzard", "zed");
 		}
 		
 		private function newTopScore(s:String) {
@@ -447,14 +629,18 @@
 		}
 		
 		private function populateText() {
-			var rollingWord:Vector.<String> = new Vector.<String>;
-			var randNum:int;
-			while( vString.length < 300 ) {
-				randNum = Math.floor(Math.random() * 263);
-				if( rollingWord.indexOf(wordList[randNum])<0 ) {
-					vString.push(wordList[randNum]);
-					rollingWord.push(wordList[randNum]);
-					if( rollingWord.length>5 ) rollingWord.shift();
+			if( Math.floor(Math.random() * 1000) < 6 ) {
+				vString.push("It's", "been", "said", "and", "done", "Every", "beautiful", "thought's", "been", "already", "sung", "And", "I", "guess", "right", "now", "here's", "another", "one", "So", "your", "melody", "will", "play", "on", "and", "on,", "with", "the", "best", "of", "'em", "You", "are", "beautiful,", "like", "a", "dream", "come", "alive,", "incredible", "A", "centrefold,", "miracle,", "lyrical", "You", "saved", "my", "life", "again", "And", "I", "want", "you", "to", "know", "baby", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "And", "I", "keep", "hitting", "repeat", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "And", "I", "keep", "hitting", "repeat", "Constantly,", "boy,", "you", "played", "through", "my", "mind", "like", "a", "symphony", "There's", "no", "way", "to", "describe", "what", "you", "do", "to", "me", "You", "just", "do", "to", "me,", "what", "you", "do", "And", "it", "feels", "like", "I've", "been", "rescued", "I've", "been", "set", "free", "I", "am", "hypnotized", "by", "your", "destiny", "You", "are", "magical,", "lyrical,", "beautiful", "You", "are...", "And", "I", "want", "you", "to", "know", "baby", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "And", "I", "keep", "hitting", "repeat", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "And", "I", "keep", "hitting", "repeat", "No", "one", "compares", "You", "stand", "alone,", "to", "every", "record", "I", "own", "Music", "to", "my", "heart", "that's", "what", "you", "are", "A", "song", "that", "goes", "on", "and", "on", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "And", "I", "keep", "hitting", "repeat", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "I", "love", "you...", "like", "a", "love", "song...");
+			} else {
+				var rollingWord:Vector.<String> = new Vector.<String>;
+				var randNum:int;
+				while( vString.length < 300 ) {
+					randNum = Math.floor(Math.random() * wordList.length);
+					if( rollingWord.indexOf(wordList[randNum])<0 ) {
+						vString.push(wordList[randNum]);
+						rollingWord.push(wordList[randNum]);
+						if( rollingWord.length>5 ) rollingWord.shift();
+					}
 				}
 			}
 		}
