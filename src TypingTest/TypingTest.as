@@ -71,7 +71,7 @@
 		
 		public function TypingTest() {
 			this.title = "Typing Test";
-			this.minigameID = "15576bc9fbed2bcae15ad893bc9e2586";
+			this.minigameID = "123";
 		}
 		
 		private function startGame( e:MouseEvent ) {
