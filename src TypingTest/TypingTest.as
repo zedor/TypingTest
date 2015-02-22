@@ -269,9 +269,9 @@
 			var txFormat:TextFormat = new TextFormat();
 			var txField:TextField = new TextField;
 
-			txFormat.color = "0xFFFFFF"
+			txFormat.color = "0xFFFFFF";
 			txFormat.size = 18;
-			//txFormat.font = "$TitleFont"
+			txFormat.font = "$TextFont";
 			txFormat.align = "right";
 			txField.autoSize = "none";
 			txField.width = 25;
@@ -305,9 +305,9 @@
 			var txFormat:TextFormat = new TextFormat();
 			var txField:TextField = new TextField;
 
-			txFormat.color = "0xFFFFFF"
+			txFormat.color = "0xFFFFFF";
 			txFormat.size = 18;
-			//txFormat.font = "$TitleFont"
+			txFormat.font = "$TextFont";
 			txFormat.align = "left";
 			txField.autoSize = "none";
 			txField.width = 130;
@@ -332,7 +332,7 @@
 
 			txFormat.color = "0xFFFFFF"
 			txFormat.size = 18;
-			//txFormat.font = "$TitleFont"
+			txFormat.font = "$TextFont";
 			txFormat.align = "left";
 			txField.autoSize = "none";
 			txField.width = 30;
@@ -463,7 +463,7 @@
 		}
 		
 		private function loadWords() {
-			wordList.push("anti-mage", "kappa", "volvo", "time", "person", "year", "way", "day", "thing", "man", "world", "life", "hand", "part", "child", "eye", "woman", "place", "work", "week", "case", "point", "government", "company", "number", "group", "problem", "fact", "be", "have", "do", "say", "get", "make", "go", "know", "take", "see", "come", "think", "look", "want", "give", "use", "find", "tell", "ask", "seem", "feel", "try", "leave", "call", "good", "new", "first", "last", "long", "great", "little", "own", "other", "old", "right", "big", "high", "different", "small", "large", "next", "early", "young", "important", "few", "public", "bad", "same", "able", "to", "of", "in", "for", "on", "with", "at", "by", "from", "up", "about", "into", "over", "after", "beneath", "under", "above", "others", "the", "and", "that", "not", "he", "as", "you", "this", "but", "his", "they", "her", "she", "or", "an", "will", "my", "one", "all", "would", "there", "their", "axe", "disruptor", "research", "quelling", "blade", "sword", "scheme", "roll", "frequent", "love", "mind", "abaddon", "alchemist", "bane", "batrider", "bloodseeker", "beastmaster", "bounty", "hunter", "ancient", "creep", "jungle", "gold", "cyka", "bristleback", "broodmother", "centaur", "chaos", "knight", "chen", "clinkz", "clockwerk", "crystal", "maiden", "dazzle", "death", "prophet", "doom", "dragon", "drow", "ranger", "earth", "spirit", "storm", "earthshaker", "elder", "titan", "ember", "enchantress", "enigma", "faceless", "void", "gyrocopter", "huskar", "invoker", "io", "jakiro", "juggernaut", "keeper", "light", "kunkka", "agility", "intelligence", "strength", "legion", "commander", "leshrac", "lich", "lina", "lion", "lone", "druid", "lifestealer", "luna", "mirana", "lycan", "magnus", "medusa", "meepo", "morphling", "naga", "siren", "nature's", "necrophos", "night", "stalker", "nyx", "assassin", "ogre", "magi", "omniknight", "oracle", "outworld", "devourer", "phantom", "phoenix", "puck", "pudge", "pugna", "queen", "pain", "razor", "riki", "rubick", "sand", "king", "shadow", "demon", "fiend", "silencer", "shaman", "skywrath", "mage", "slardar", "slark", "sniper", "spectre", "breaker", "sven", "techies", "templar", "terrorblade", "tidehunter", "timbersaw", "tinker", "treant", "protector", "tusk", "undying", "ursa", "venomancer", "viper", "visage", "warlock", "windranger", "winter", "wyvern", "witch", "doctor", "wraith", "zeus", "evil", "geniuses", "secret", "vici", "gaming", "alliance", "natus", "vincere", "Selena", "Gomez", "Noya", "jimmydorry", "ashfortyseven", "BMD", "Perry", "Myll", "penguinwizzard", "zed");
+			wordList.push("anti-mage", "kappa", "volvo", "time", "person", "year", "way", "day", "thing", "man", "world", "life", "hand", "part", "child", "eye", "woman", "place", "work", "week", "case", "point", "government", "company", "number", "group", "problem", "fact", "be", "have", "do", "say", "get", "make", "go", "know", "take", "see", "come", "think", "look", "want", "give", "use", "find", "tell", "ask", "seem", "feel", "try", "leave", "call", "good", "new", "first", "last", "long", "great", "little", "own", "other", "old", "right", "big", "high", "different", "small", "large", "next", "early", "young", "important", "few", "public", "bad", "same", "able", "to", "of", "in", "for", "on", "with", "at", "by", "from", "up", "about", "into", "over", "after", "beneath", "under", "above", "others", "the", "and", "that", "not", "he", "as", "you", "this", "but", "his", "they", "her", "she", "or", "an", "will", "my", "one", "all", "would", "there", "their", "axe", "disruptor", "research", "quelling", "blade", "sword", "scheme", "roll", "frequent", "love", "mind", "abaddon", "alchemist", "bane", "batrider", "bloodseeker", "beastmaster", "bounty", "hunter", "ancient", "creep", "jungle", "gold", "cyka", "bristleback", "broodmother", "centaur", "chaos", "knight", "chen", "clinkz", "clockwerk", "crystal", "maiden", "dazzle", "death", "prophet", "doom", "dragon", "drow", "ranger", "earth", "spirit", "storm", "earthshaker", "elder", "titan", "ember", "enchantress", "enigma", "faceless", "void", "gyrocopter", "huskar", "invoker", "io", "jakiro", "juggernaut", "keeper", "light", "kunkka", "agility", "intelligence", "strength", "legion", "commander", "leshrac", "lich", "lina", "lion", "lone", "druid", "lifestealer", "luna", "mirana", "lycan", "magnus", "medusa", "meepo", "morphling", "naga", "siren", "nature's", "necrophos", "night", "stalker", "nyx", "assassin", "ogre", "magi", "omniknight", "oracle", "outworld", "devourer", "phantom", "phoenix", "puck", "pudge", "pugna", "queen", "pain", "razor", "riki", "rubick", "sand", "king", "shadow", "demon", "fiend", "silencer", "shaman", "skywrath", "mage", "slardar", "slark", "sniper", "spectre", "breaker", "sven", "techies", "templar", "terrorblade", "tidehunter", "timbersaw", "tinker", "treant", "protector", "tusk", "undying", "ursa", "venomancer", "viper", "visage", "warlock", "windranger", "winter", "wyvern", "witch", "doctor", "wraith", "zeus", "evil", "geniuses", "secret", "vici", "gaming", "alliance", "natus", "vincere", "refresher", "orchid", "divine", "rapier", "branch", "power", "treads", "phase", "boots", "aquila", "radiance", "scythe", "sheepstick", "buriza", "daedalus", "butterfly", "eaglesong", "lothar", "tranquil", "force", "blink", "dagon", "buckler", "mekansm", "arcane", "necronomicon", "abyssal", "etheral", "bloodstone", "linken", "vanguard", "shiva", "manta", "yasha", "sange", "heart", "desolator", "maelstrom", "mjollnir", "halberd", "skadi", "satanic", "diffusal", "hood", "defiance", "armlet", "atos", "veil", "pipe", "vladmir's");
 		}
 		
 		private function newTopScore(s:String) {
@@ -476,7 +476,7 @@
 
 			txFormat.color = "0xFFFFFF"
 			txFormat.size = 30;
-			//txFormat.font = "$TitleFont"
+			txFormat.font = "$TextFont";
 			txFormat.align = "center";
 			topScoreFieldFormat = txFormat;
 			topScoreField.autoSize = "center";
@@ -497,7 +497,7 @@
 
 			txFormat.color = "0xFFFFFF"
 			txFormat.size = 30;
-			//txFormat.font = "$TitleFont"
+			txFormat.font = "$TextFont";
 			txFormat.align = "center";
 			scFieldFormat = txFormat;
 			scoreField.autoSize = "center";
@@ -518,7 +518,7 @@
 
 			txFormat.color = "0xFFFFFF"
 			txFormat.size = 30;
-			//txFormat.font = "$TitleFont"
+			txFormat.font = "$TextFont";
 			txFormat.align = "center";
 			gtFieldFormat = txFormat;
 			gtField.autoSize = "center";
@@ -561,7 +561,7 @@
 
 			txFormat.color = "0xFFFFFF"
 			txFormat.size = 24;
-			//txFormat.font = "$TitleFont"
+			txFormat.font = "$TextFont";
 			txFormat.align = "center";
 			inFieldFormat = txFormat;
 			inputField.autoSize = "center";
@@ -629,17 +629,28 @@
 		}
 		
 		private function populateText() {
+			var vEaster:Vector.<String> = new Vector.<String>;
+			vEaster.push("Selena", "Gomez", "Noya", "jimmydorry", "ashfortyseven", "BMD", "Perry", "Myll", "penguinwizzard", "zed", "SinZ");
 			if( Math.floor(Math.random() * 1000) < 6 ) {
 				vString.push("It's", "been", "said", "and", "done", "Every", "beautiful", "thought's", "been", "already", "sung", "And", "I", "guess", "right", "now", "here's", "another", "one", "So", "your", "melody", "will", "play", "on", "and", "on,", "with", "the", "best", "of", "'em", "You", "are", "beautiful,", "like", "a", "dream", "come", "alive,", "incredible", "A", "centrefold,", "miracle,", "lyrical", "You", "saved", "my", "life", "again", "And", "I", "want", "you", "to", "know", "baby", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "And", "I", "keep", "hitting", "repeat", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "And", "I", "keep", "hitting", "repeat", "Constantly,", "boy,", "you", "played", "through", "my", "mind", "like", "a", "symphony", "There's", "no", "way", "to", "describe", "what", "you", "do", "to", "me", "You", "just", "do", "to", "me,", "what", "you", "do", "And", "it", "feels", "like", "I've", "been", "rescued", "I've", "been", "set", "free", "I", "am", "hypnotized", "by", "your", "destiny", "You", "are", "magical,", "lyrical,", "beautiful", "You", "are...", "And", "I", "want", "you", "to", "know", "baby", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "And", "I", "keep", "hitting", "repeat", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "And", "I", "keep", "hitting", "repeat", "No", "one", "compares", "You", "stand", "alone,", "to", "every", "record", "I", "own", "Music", "to", "my", "heart", "that's", "what", "you", "are", "A", "song", "that", "goes", "on", "and", "on", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "And", "I", "keep", "hitting", "repeat", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "I,", "I", "love", "you", "like", "a", "love", "song,", "baby", "I", "love", "you...", "like", "a", "love", "song...");
 			} else {
 				var rollingWord:Vector.<String> = new Vector.<String>;
 				var randNum:int;
 				while( vString.length < 300 ) {
-					randNum = Math.floor(Math.random() * wordList.length);
-					if( rollingWord.indexOf(wordList[randNum])<0 ) {
-						vString.push(wordList[randNum]);
-						rollingWord.push(wordList[randNum]);
-						if( rollingWord.length>5 ) rollingWord.shift();
+					if( Math.floor(Math.random() * 1000) < 6 ) {
+						randNum = Math.floor(Math.random() * vEaster.length)
+						if( rollingWord.indexOf(vEaster[randNum])<0 ) {
+							vString.push(vEaster[randNum]);
+							rollingWord.push(vEaster[randNum]);
+							if( rollingWord.length>5 ) rollingWord.shift();
+						}
+					} else {
+						randNum = Math.floor(Math.random() * wordList.length);
+						if( rollingWord.indexOf(wordList[randNum])<0 ) {
+							vString.push(wordList[randNum]);
+							rollingWord.push(wordList[randNum]);
+							if( rollingWord.length>5 ) rollingWord.shift();
+						}
 					}
 				}
 			}
