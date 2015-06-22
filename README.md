@@ -1,3 +1,5 @@
+## Flash/Scaleform is deprecated in Dota2Reborn. No further support for this module.
+
 # TypingTest
 A word-per-minute testing minigame for GDS lobby
 
